@@ -22,7 +22,7 @@ void Hangman::startGame() {
 	//Get a random number
 	random_device rd;
 	mt19937 eng(rd());
-	uniform_int_distribution<> distr(0, words.size());
+	uniform_int_distribution<> distr(0, words.size() - 1);
 	int index = distr(eng);
 
 	word = words[index];

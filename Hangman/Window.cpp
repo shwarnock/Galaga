@@ -16,13 +16,20 @@ Window::Window()
 		cout << "Could not create window: " << SDL_GetError() << endl;
 	}
 
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+	SDL_SetRenderDrawColor(renderer, 20, 20, 20, 20);
+	SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
+
 	SDL_Surface* screen = SDL_GetWindowSurface(window);
 	string dir = getCurrentWorkingDir() + "/ExternalDependencies/Roboto-Black.ttf";
-	int n = dir.length();
-	char char_array[n + 1];
-	
-	TTF_Font* font = TTF_OpenFont("GSGSDG", 32);
-	showMenu(screen, 
+	char * path = new char[dir.size() + 1];
+	path[dir.size()] = 0;
+	memcpy(path, dir.c_str(), dir.size());
+	cout << path;
+	TTF_Init();
+	TTF_Font* font = TTF_OpenFont(path, 32);
+	showMenu(screen, font);
 }
 
 char Window::showMenu(SDL_Surface* screen, TTF_Font* font)
@@ -39,10 +46,9 @@ char Window::showMenu(SDL_Surface* screen, TTF_Font* font)
 	for (int i = 0; i < NUMMENU; ++i)
 	{
 		menus[i] = TTF_RenderText_Solid(font, labels[i], color[0]);
-		pos[i].x = screen->clip_rect.w / 26 - menus[0]->clip_rect.w / 2;
+		pos[i].x = screen->clip_rect.w / 26 - menus[i]->clip_rect.w / 26;
+		SDL_BlitSurface(menus[i], NULL, screen, &pos[i]);
 	}
-
-	SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 0x00, 0x00, 0x00));
 
 	SDL_Event event;
 	while (1)
@@ -88,12 +94,20 @@ char Window::showMenu(SDL_Surface* screen, TTF_Font* font)
 					{
 						if (x >= pos[i].x && x <= pos[i].x + pos[i].w && y >= pos[i].y && y <= pos[i].h)
 						{
+							for (int j = 0; j < 2; ++j)
+							{
+								SDL_FreeSurface(menus[j]);
+							}
 							return *labels[i];
 						}
 					}
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym == SDLK_ESCAPE)
 					{
+						for (int i = 0; i < 2; ++i)
+						{
+							SDL_FreeSurface(menus[i]);
+						}
 						return 0;
 					}
 			}
