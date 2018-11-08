@@ -10,18 +10,23 @@ using namespace std;
 class Hangman {
 
 private:
-	string word;
-	vector<string> words;
+	//methods
 	void startGame();
 	vector<string> createWordList();
+	bool verifyGuess(string guess);
+	void checkForWin();
+
+	//variables
+	string word;
+	vector<string> words;
 	string guesses;
 	int maxGuesses;
 	string message;
-	bool verifyGuess(string guess);
-	void checkForWin();
+
 	int currentGuessCount;
 
 public:
+	//methods
 	Hangman();
 	void displayWord();
 	void displayMessage();
