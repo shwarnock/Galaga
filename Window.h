@@ -3,9 +3,9 @@
 #define GetCurrentDir _getcwd
 #include <stdio.h>
 #include <SDL_ttf.h>
-#include <SDL_mixer.h>
+#define SDL_MAIN_DEFINED
 #include <SDL.h>
-#undef main
+#include <algorithm>
 
 using namespace std;
 

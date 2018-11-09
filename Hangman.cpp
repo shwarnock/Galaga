@@ -1,4 +1,4 @@
-#include "Header.h"
+#include "Hangman.h"
 
 Hangman::Hangman() {
 	startGame();
