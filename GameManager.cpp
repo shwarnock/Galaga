@@ -30,16 +30,29 @@ GameManager::GameManager()
 
 	mTimer = Timer::Instance();
 
-	mChild = new GameEntity(100.0f, 400.0f);
-	mParent = new GameEntity(100.0f, 500.0f);
+	mAssetManager = AssetManager::Instance();
+	mInputManager = InputManager::Instance();
+
+	mTex = new AnimatedTexture("AlphabetSheet.png", 0, 0, 25, 28, 7, 5.0f, AnimatedTexture::horizontal);
+	mTex->Pos(Vector2(Graphics::SCREEN_WIDTH * 0.5f, Graphics::SCREEN_HEIGHT * 0.5f));
 }
 
 GameManager::~GameManager()
 {
 	Graphics::Release();
 	mGraphics = NULL;
+
+	AssetManager::Release();
+	mAssetManager = NULL;
+
+	InputManager::Release();
+	mInputManager = NULL;
+
 	Timer::Release();
 	mTimer = NULL;
+
+	delete mTex;
+	mTex = NULL;
 }
 
 void GameManager::Run()
@@ -58,6 +71,14 @@ void GameManager::Run()
 
 		if (mTimer->DeltaTime() >= (1.0f / FRAME_RATE))
 		{
+			mInputManager->Update();
+
+			mTex->Update();
+
+			mGraphics->ClearBackBuffer();
+
+			mTex->Render();
+
 			mGraphics->Render();
 
 			mTimer->Reset();

@@ -1,7 +1,7 @@
 #ifndef _GAMEENTITY_H
 #define _GAMEENTITY_H
 
-#include "MathHelper.h"
+#include "../MathHelper.h"
 
 class GameEntity
 {
@@ -30,6 +30,8 @@ public:
 
 	void Parent(GameEntity* parent);
 	GameEntity* Parent();
+
+	void Translate(Vector2 vec);
 
 	virtual void Update();
 	virtual void Render();

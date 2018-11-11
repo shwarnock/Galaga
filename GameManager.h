@@ -1,8 +1,8 @@
 #ifndef _GAMEMANAGER_H
 #define _GAMEMANAGER_H
-#include "Graphics.h"
-#include "Timer.h"
-#include "GameEntity.h"
+
+#include "Entities/AnimatedTexture.h"
+#include "InputManager.h"
 
 class GameManager
 {
@@ -13,9 +13,14 @@ private:
 
 	bool mQuit;
 	Graphics* mGraphics;
+	AssetManager* mAssetManager;
+	InputManager* mInputManager;
+
 	Timer* mTimer;
 
 	SDL_Event mEvents;
+
+	AnimatedTexture* mTex;
 
 public:
 	static GameManager* Instance();

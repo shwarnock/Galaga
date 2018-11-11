@@ -2,7 +2,11 @@
 #define _GRAPHICS_H
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
+#include <string>
+
+using namespace std;
 
 class Graphics
 {
@@ -17,10 +21,18 @@ private:
 	SDL_Window* mWindow;
 	SDL_Surface* mBackBuffer;
 
+	SDL_Renderer* mRenderer;
+
 public:
 	static Graphics* Instance();
 	static void Release();
 	static bool Initialized();
+
+	SDL_Texture* LoadTexture(string path);
+
+	void ClearBackBuffer();
+
+	void DrawTexture(SDL_Texture* tex, SDL_Rect* clip = NULL, SDL_Rect* rend = NULL);
 
 	void Render();
 
