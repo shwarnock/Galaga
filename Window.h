@@ -15,6 +15,7 @@ private:
 	const int WIDTH = 800, HEIGHT = 600;
 	char showMenu(SDL_Surface* surface, TTF_Font* font);
 	string getCurrentWorkingDir();
+	SDL_Renderer* renderer;
 
 public:
 	Window();

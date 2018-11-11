@@ -4,8 +4,17 @@ project(hangman VERSION 0.1 LANGUAGES CXX)
 
 set (SOURCE_FILES main.cpp ${CMAKE_CURRENT_LIST_DIR}/Hangman.cpp 
 						   ${CMAKE_CURRENT_LIST_DIR}/Hangman.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Window.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/Window.h)
+						   ${CMAKE_CURRENT_LIST_DIR}/GameManager.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/GameManager.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Graphics.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/Graphics.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Timer.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Timer.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/GameEntity.h
+						   ${CMAKE_CURRENT_LIST_DIR}/GameEntity.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/Window.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Window.h
+						   ${CMAKE_CURRENT_LIST_DIR}/MathHelper.h)
 
 SET(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/Debug)
 
