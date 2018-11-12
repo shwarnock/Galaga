@@ -69,14 +69,12 @@ target_link_libraries(hangman ${CMAKE_CURRENT_LIST_DIR}/ExternalDependencies/SDL
 target_link_libraries(hangman ${CMAKE_CURRENT_LIST_DIR}/ExternalDependencies/SDL2_ttf-2.0.14/lib/x86/SDL2_ttf.lib)
 target_link_libraries(hangman ${CMAKE_CURRENT_LIST_DIR}/ExternalDependencies/SDL2_image-2.0.4/lib/x86/SDL2_image.lib)
 
-add_custom_command(TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/Roboto-Black.ttf" ${PROJECT_SOURCE_DIR}/build
-				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/SDL2.dll" $<TARGET_FILE_DIR:hangman>
+add_custom_command(TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/SDL2.dll" $<TARGET_FILE_DIR:hangman>
 				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/SDL2_ttf.dll" $<TARGET_FILE_DIR:hangman>
-				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libfreetype-6.dll" $<TARGET_FILE_DIR:hangman>
-				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/Roboto-Black.ttf" $<TARGET_FILE_DIR:hangman>
-				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libjpeg-9.dll" $<TARGET_FILE_DIR:hangman>
+				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libfreetype-6.dll" $<TARGET_FILE_DIR:hangman>			   
 				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libpng16-16.dll" $<TARGET_FILE_DIR:hangman>
 				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libwebp-7.dll" $<TARGET_FILE_DIR:hangman>
+				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libjpeg-9.dll" $<TARGET_FILE_DIR:hangman>
 				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/SDL2_image.dll" $<TARGET_FILE_DIR:hangman>
 				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libtiff-5.dll" $<TARGET_FILE_DIR:hangman>
 				   TARGET hangman POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/zlib1.dll" $<TARGET_FILE_DIR:hangman>

@@ -23,6 +23,7 @@ protected:
 public:
 	Texture(string fileName);
 	Texture(string fileName, int x, int y, int w, int h);
+	Texture(string text, string fontPath, int size, SDL_Color color);
 	~Texture();
 
 	virtual void Render();

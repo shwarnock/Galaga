@@ -5,6 +5,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
+#include <SDL_ttf.h>
 
 using namespace std;
 
@@ -29,6 +30,7 @@ public:
 	static bool Initialized();
 
 	SDL_Texture* LoadTexture(string path);
+	SDL_Texture* CreateTextTexture(TTF_Font* font, string text, SDL_Color color);
 
 	void ClearBackBuffer();
 

@@ -34,6 +34,26 @@ AssetManager::~AssetManager()
 	}
 
 	mTextures.clear();
+
+	for (auto text : mTextTextures)
+	{
+		if (text.second != NULL)
+		{
+			SDL_DestroyTexture(text.second);
+		}
+	}
+
+	mTextTextures.clear();
+
+	for (auto font : mFonts)
+	{
+		if (font.second != NULL)
+		{
+			TTF_CloseFont(font.second);
+		}
+	}
+
+	mFonts.clear();
 }
 
 SDL_Texture* AssetManager::GetTexture(string fileName)
@@ -41,10 +61,37 @@ SDL_Texture* AssetManager::GetTexture(string fileName)
 	string fullPath = SDL_GetBasePath();
 	fullPath.append("..\\..\\assets\\" + fileName);
 
-	printf(fullPath.c_str());
-
 	if (mTextures[fullPath] == nullptr)
 		mTextures[fullPath] = Graphics::Instance()->LoadTexture(fullPath);
 
 	return mTextures[fullPath];
+}
+
+TTF_Font* AssetManager::GetFont(string fileName, int size)
+{
+	string fullPath = SDL_GetBasePath();
+	fullPath.append("..\\..\\assets\\" + fileName);
+
+	string key = fullPath + (char)size;
+
+	if (mFonts[key] == nullptr)
+	{
+		mFonts[key] = TTF_OpenFont(fullPath.c_str(), size);
+		if (mFonts[key] == nullptr)
+			printf("Font Loading Error: Font-%s Error-%s\n", fileName.c_str(), TTF_GetError());
+	}
+	
+	return mFonts[key];
+}
+
+SDL_Texture* AssetManager::GetText(string text, string fileName, int size, SDL_Color color)
+{
+	TTF_Font* font = GetFont(fileName, size);
+
+	string key = text + fileName + (char)size + (char)color.r + (char)color.b + (char)color.g;
+
+	if (mTextTextures[key] == nullptr)
+		mTextTextures[key] = Graphics::Instance()->CreateTextTexture(font, text, color);
+
+	return mTextTextures[key];
 }

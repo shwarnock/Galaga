@@ -33,17 +33,17 @@ GameManager::GameManager()
 	mAssetManager = AssetManager::Instance();
 	mInputManager = InputManager::Instance();
 
-	mTex = new AnimatedTexture("AlphabetSheet.png", 0, 0, 25, 28, 7, 5.0f, AnimatedTexture::horizontal);
+	mTex = new Texture("Hello World", "Roboto-Black.ttf", 72, { 255, 200, 0 });
 	mTex->Pos(Vector2(Graphics::SCREEN_WIDTH * 0.5f, Graphics::SCREEN_HEIGHT * 0.5f));
 }
 
 GameManager::~GameManager()
 {
-	Graphics::Release();
-	mGraphics = NULL;
-
 	AssetManager::Release();
 	mAssetManager = NULL;
+
+	Graphics::Release();
+	mGraphics = NULL;
 
 	InputManager::Release();
 	mInputManager = NULL;

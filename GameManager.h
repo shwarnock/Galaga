@@ -20,7 +20,7 @@ private:
 
 	SDL_Event mEvents;
 
-	AnimatedTexture* mTex;
+	Texture* mTex;
 
 public:
 	static GameManager* Instance();
