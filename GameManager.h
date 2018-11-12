@@ -1,8 +1,8 @@
 #ifndef _GAMEMANAGER_H
 #define _GAMEMANAGER_H
 
-#include "Entities/AnimatedTexture.h"
-#include "InputManager.h"
+#include "AudioManager.h"
+#include "Galaga/StartScreen.h"
 
 class GameManager
 {
@@ -15,12 +15,16 @@ private:
 	Graphics* mGraphics;
 	AssetManager* mAssetManager;
 	InputManager* mInputManager;
+	AudioManager* mAudioManager;
+
+	Texture* mTexture;
+	Texture* mTexture2;
 
 	Timer* mTimer;
 
 	SDL_Event mEvents;
 
-	Texture* mTex;
+	StartScreen* mStartScreen;
 
 public:
 	static GameManager* Instance();
@@ -31,5 +35,10 @@ public:
 private:
 	GameManager();
 	~GameManager();
+
+	void EarlyUpdate();
+	void Update();
+	void LateUpdate();
+	void Render();
 };
 #endif

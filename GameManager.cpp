@@ -31,14 +31,19 @@ GameManager::GameManager()
 	mTimer = Timer::Instance();
 
 	mAssetManager = AssetManager::Instance();
+	
 	mInputManager = InputManager::Instance();
 
-	mTex = new Texture("Hello World", "Roboto-Black.ttf", 72, { 255, 200, 0 });
-	mTex->Pos(Vector2(Graphics::SCREEN_WIDTH * 0.5f, Graphics::SCREEN_HEIGHT * 0.5f));
+	mAudioManager = AudioManager::Instance();
+
+	mStartScreen = new StartScreen();
 }
 
 GameManager::~GameManager()
 {
+	AudioManager::Release();
+	mAudioManager = NULL;
+
 	AssetManager::Release();
 	mAssetManager = NULL;
 
@@ -51,8 +56,34 @@ GameManager::~GameManager()
 	Timer::Release();
 	mTimer = NULL;
 
-	delete mTex;
-	mTex = NULL;
+	delete mStartScreen;
+	mStartScreen = NULL;
+}
+
+void GameManager::EarlyUpdate()
+{
+	mInputManager->Update();
+}
+
+
+void GameManager::Update()
+{
+	mStartScreen->Update();
+}
+
+void GameManager::Render()
+{
+	mGraphics->ClearBackBuffer();
+
+	mStartScreen->Render();
+
+	mGraphics->Render();
+}
+
+void GameManager::LateUpdate()
+{
+	mInputManager->UpdatePreviousInput();
+	mTimer->Reset();
 }
 
 void GameManager::Run()
@@ -71,17 +102,10 @@ void GameManager::Run()
 
 		if (mTimer->DeltaTime() >= (1.0f / FRAME_RATE))
 		{
-			mInputManager->Update();
-
-			mTex->Update();
-
-			mGraphics->ClearBackBuffer();
-
-			mTex->Render();
-
-			mGraphics->Render();
-
-			mTimer->Reset();
+			EarlyUpdate();
+			Update();
+			LateUpdate();
+			Render();
 		}
 	}
 }

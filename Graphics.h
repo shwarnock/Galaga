@@ -12,8 +12,10 @@ using namespace std;
 class Graphics
 {
 public:
-	static const int SCREEN_WIDTH = 800;
-	static const int SCREEN_HEIGHT = 600;
+	static const int SCREEN_WIDTH = 1024;
+	static const int SCREEN_HEIGHT = 896;
+
+	const char* WINDOW_TITLE = "Galaga";
 
 private:
 	static Graphics* sInstance;
@@ -34,7 +36,7 @@ public:
 
 	void ClearBackBuffer();
 
-	void DrawTexture(SDL_Texture* tex, SDL_Rect* clip = NULL, SDL_Rect* rend = NULL);
+	void DrawTexture(SDL_Texture* tex, SDL_Rect* clip = NULL, SDL_Rect* rend = NULL, float angle = 0.0f, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
 	void Render();
 

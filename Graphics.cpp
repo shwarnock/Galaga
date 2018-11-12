@@ -48,7 +48,7 @@ Graphics::~Graphics()
 
 bool Graphics::Init()
 {
-	if (SDL_Init(SDL_INIT_VIDEO < 0))
+	if (SDL_Init(SDL_INIT_VIDEO  | SDL_INIT_AUDIO < 0))
 	{
 		printf("SDL Initialization Error: %s\n", SDL_GetError());
 		return false;
@@ -69,7 +69,7 @@ bool Graphics::Init()
 		return false;
 	}
 
-	SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
 
 	int flags = IMG_INIT_PNG;
 
@@ -139,9 +139,9 @@ void Graphics::ClearBackBuffer()
 	SDL_RenderClear(mRenderer);
 }
 
-void Graphics::DrawTexture(SDL_Texture* tex, SDL_Rect* clip, SDL_Rect* rend)
+void Graphics::DrawTexture(SDL_Texture* tex, SDL_Rect* clip, SDL_Rect* rend, float angle, SDL_RendererFlip flip)
 {
-	SDL_RenderCopy(mRenderer, tex, clip, rend);
+	SDL_RenderCopyEx(mRenderer, tex, clip, rend, angle, NULL, flip);
 }
 
 void Graphics::Render()
