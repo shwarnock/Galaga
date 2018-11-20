@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include <time.h>
 
 GameManager* GameManager::sInstance = NULL;
 
@@ -20,6 +21,8 @@ void GameManager::Release()
 
 GameManager::GameManager()
 {
+	srand(time(0));
+
 	mQuit = false;
 	mGraphics = Graphics::Instance();
 
@@ -36,11 +39,14 @@ GameManager::GameManager()
 
 	mAudioManager = AudioManager::Instance();
 
-	mStartScreen = new StartScreen();
+	mScreenManager = ScreenManager::Instance();
 }
 
 GameManager::~GameManager()
 {
+	ScreenManager::Release();
+	mScreenManager = NULL;
+
 	AudioManager::Release();
 	mAudioManager = NULL;
 
@@ -55,9 +61,6 @@ GameManager::~GameManager()
 
 	Timer::Release();
 	mTimer = NULL;
-
-	delete mStartScreen;
-	mStartScreen = NULL;
 }
 
 void GameManager::EarlyUpdate()
@@ -68,14 +71,14 @@ void GameManager::EarlyUpdate()
 
 void GameManager::Update()
 {
-	mStartScreen->Update();
+	mScreenManager->Update();
 }
 
 void GameManager::Render()
 {
 	mGraphics->ClearBackBuffer();
 
-	mStartScreen->Render();
+	mScreenManager->Render();
 
 	mGraphics->Render();
 }

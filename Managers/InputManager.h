@@ -2,7 +2,7 @@
 #define _INPUTMANAGER_H
 
 #include <string.h>
-#include "MathHelper.h"
+#include "../MathHelper.h"
 #include <SDL.h>
 
 class InputManager

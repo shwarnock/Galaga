@@ -2,7 +2,8 @@
 #define _GAMEMANAGER_H
 
 #include "AudioManager.h"
-#include "Galaga/StartScreen.h"
+#include "ScreenManager.h"
+#include "../Timer.h"
 
 class GameManager
 {
@@ -24,7 +25,7 @@ private:
 
 	SDL_Event mEvents;
 
-	StartScreen* mStartScreen;
+	ScreenManager* mScreenManager;
 
 public:
 	static GameManager* Instance();

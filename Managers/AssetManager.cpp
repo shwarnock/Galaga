@@ -77,7 +77,7 @@ AssetManager::~AssetManager()
 SDL_Texture* AssetManager::GetTexture(string fileName)
 {
 	string fullPath = SDL_GetBasePath();
-	fullPath.append("..\\..\\assets\\Sprites" + fileName);
+	fullPath.append("..\\..\\assets\\Sprites\\" + fileName);
 
 	if (mTextures[fullPath] == nullptr)
 		mTextures[fullPath] = Graphics::Instance()->LoadTexture(fullPath);

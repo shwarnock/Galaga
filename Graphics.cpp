@@ -54,7 +54,7 @@ bool Graphics::Init()
 		return false;
 	}
 
-	mWindow = SDL_CreateWindow("Hangman", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	mWindow = SDL_CreateWindow("Galaga", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
 	if (mWindow == NULL)
 	{
@@ -69,7 +69,7 @@ bool Graphics::Init()
 		return false;
 	}
 
-	SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
+	SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0xFF);
 
 	int flags = IMG_INIT_PNG;
 
@@ -142,6 +142,13 @@ void Graphics::ClearBackBuffer()
 void Graphics::DrawTexture(SDL_Texture* tex, SDL_Rect* clip, SDL_Rect* rend, float angle, SDL_RendererFlip flip)
 {
 	SDL_RenderCopyEx(mRenderer, tex, clip, rend, angle, NULL, flip);
+}
+
+void Graphics::DrawLine(float startX, float startY, float endX, float endY)
+{
+	SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(mRenderer, startX, startY, endX, endY);
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 }
 
 void Graphics::Render()

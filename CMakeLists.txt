@@ -2,31 +2,73 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 project(Galaga VERSION 0.1 LANGUAGES CXX)
 
-set (SOURCE_FILES main.cpp ${CMAKE_CURRENT_LIST_DIR}/GameManager.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/GameManager.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Graphics.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/Graphics.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Timer.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Timer.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/MathHelper.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Entities/GameEntity.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Entities/GameEntity.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/Entities/Texture.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Entities/Texture.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/Entities/AnimatedTexture.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Entities/AnimatedTexture.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/AssetManager.h
-						   ${CMAKE_CURRENT_LIST_DIR}/AssetManager.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/AudioManager.h
-						   ${CMAKE_CURRENT_LIST_DIR}/AudioManager.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/InputManager.h
-						   ${CMAKE_CURRENT_LIST_DIR}/InputManager.cpp
-						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/StartScreen.h
-						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/StartScreen.cpp)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+file(GLOB SOURCE_FILES     ${CMAKE_CURRENT_LIST_DIR}/*.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/*.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Entities/*.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/Entities/*.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Managers/*.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/Managers/*.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/*.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/*.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/Enemies/*.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/Enemies/*.h
+						   ${CMAKE_CURRENT_LIST_DIR}/Levels/*.xml
+						   )
 
 file(GLOB_RECURSE TMP_FILES
     ${CMAKE_CURRENT_LIST_DIR}/Entities/*.h
 	${CMAKE_CURRENT_LIST_DIR}/Entities/*.cpp
+	)
+
+foreach(f ${TMP_FILES})
+    # Get the path of the file relative to ${DIRECTORY},
+    # then alter it (not compulsory)
+
+    file(RELATIVE_PATH SRCGR ${CMAKE_CURRENT_LIST_DIR} ${f})
+	if (${f} MATCHES ".*cpp")
+		set(SRCGR "Source Files/${SRCGR}")
+	elseif (${f} MATCHES ".*h")
+	    set(SRCGR "Header Files/${SRCGR}")
+	endif()
+
+    # Extract the folder, ie remove the filename part
+    string(REGEX REPLACE "(.*)(/[^/]*)$" "\\1" SRCGR ${SRCGR})
+
+    # Source_group expects \\ (double antislash), not / (slash)
+    string(REPLACE / \\ SRCGR ${SRCGR})
+    source_group("${SRCGR}" FILES ${f})
+endforeach()
+
+file(GLOB_RECURSE TMP_FILES
+    ${CMAKE_CURRENT_LIST_DIR}/Levels/*.xml
+	)
+
+foreach(f ${TMP_FILES})
+    # Get the path of the file relative to ${DIRECTORY},
+    # then alter it (not compulsory)
+
+    file(RELATIVE_PATH SRCGR ${CMAKE_CURRENT_LIST_DIR} ${f})
+	if (${f} MATCHES ".*cpp")
+		set(SRCGR "Source Files/${SRCGR}")
+	elseif (${f} MATCHES ".*h")
+	    set(SRCGR "Source Files/${SRCGR}")
+	endif()
+
+    # Extract the folder, ie remove the filename part
+    string(REGEX REPLACE "(.*)(/[^/]*)$" "\\1" SRCGR ${SRCGR})
+
+    # Source_group expects \\ (double antislash), not / (slash)
+    string(REPLACE / \\ SRCGR ${SRCGR})
+    source_group("${SRCGR}" FILES ${f})
+endforeach()
+
+file(GLOB_RECURSE TMP_FILES
+    ${CMAKE_CURRENT_LIST_DIR}/Managers/*.h
+	${CMAKE_CURRENT_LIST_DIR}/Managers/*.cpp
 	)
 
 foreach(f ${TMP_FILES})
@@ -72,17 +114,14 @@ foreach(f ${TMP_FILES})
     source_group("${SRCGR}" FILES ${f})
 endforeach()
 
+
 SET(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/Debug)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Galaga)
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 
 add_executable(Galaga ${SOURCE_FILES})
-
-set(VARIABLE_NAME ${CMAKE_CURRENT_LIST_DIR}/GameEntity.cpp ${CMAKE_CURRENT_LIST_DIR}/GemeEntity.h)
-source_group("Entities\\module" FILES ${VARIABLE_NAME})
-set(SOURCE_FILES ${VARIABLE_NAME})
 
 target_include_directories (Galaga PUBLIC ${CMAKE_CURRENT_LIST_DIR}/ExternalDependencies/SDL/include)
 target_include_directories (Galaga PUBLIC ${CMAKE_CURRENT_LIST_DIR}/ExternalDependencies/SDL2_ttf-2.0.14/include)
@@ -113,4 +152,5 @@ add_custom_command(TARGET Galaga POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_
 				   TARGET Galaga POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libvorbis-0.dll" $<TARGET_FILE_DIR:Galaga>
 				   TARGET Galaga POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/libvorbisfile-3.dll" $<TARGET_FILE_DIR:Galaga>
 				   TARGET Galaga POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/ExternalDependencies/dlls/SDL2_mixer.dll" $<TARGET_FILE_DIR:Galaga>
+				   TARGET Galaga POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/Levels/Level1.xml" "${CMAKE_BINARY_DIR}/Debug/Levels/Level1.xml"
 				   )

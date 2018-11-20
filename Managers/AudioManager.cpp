@@ -40,13 +40,13 @@ void AudioManager::PlayMusic(string fileName, int loops)
 void AudioManager::PauseMusic()
 {
 	if (Mix_PlayingMusic != 0)
-		Mix_PauseMusic;
+		Mix_PauseMusic();
 }
 
 void AudioManager::ResumeMusic()
 {
 	if (Mix_PausedMusic != 0)
-		Mix_ResumeMusic;
+		Mix_ResumeMusic();
 }
 
 void AudioManager::PlaySFX(string fileName, int loops, int channel)

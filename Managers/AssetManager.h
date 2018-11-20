@@ -3,7 +3,7 @@
 
 #include <map>
 #include <SDL_mixer.h>
-#include "Graphics.h"
+#include "../Graphics.h"
 
 class AssetManager
 {

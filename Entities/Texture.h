@@ -2,7 +2,7 @@
 #define _TEXTURE_H
 
 #include "GameEntity.h"
-#include "../AssetManager.h"
+#include "../Managers/AssetManager.h"
 
 class Texture : public GameEntity
 {
