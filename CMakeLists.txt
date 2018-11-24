@@ -17,7 +17,33 @@ file(GLOB SOURCE_FILES     ${CMAKE_CURRENT_LIST_DIR}/*.cpp
 						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/Enemies/*.cpp
 						   ${CMAKE_CURRENT_LIST_DIR}/Galaga/Enemies/*.h
 						   ${CMAKE_CURRENT_LIST_DIR}/Levels/*.xml
+						   ${CMAKE_CURRENT_LIST_DIR}/Physics/*.cpp
+						   ${CMAKE_CURRENT_LIST_DIR}/Physics/*.h
 						   )
+
+file(GLOB_RECURSE TMP_FILES
+    ${CMAKE_CURRENT_LIST_DIR}/Physics/*.h
+	${CMAKE_CURRENT_LIST_DIR}/Physics/*.cpp
+	)
+
+foreach(f ${TMP_FILES})
+    # Get the path of the file relative to ${DIRECTORY},
+    # then alter it (not compulsory)
+
+    file(RELATIVE_PATH SRCGR ${CMAKE_CURRENT_LIST_DIR} ${f})
+	if (${f} MATCHES ".*cpp")
+		set(SRCGR "Source Files/${SRCGR}")
+	elseif (${f} MATCHES ".*h")
+	    set(SRCGR "Header Files/${SRCGR}")
+	endif()
+
+    # Extract the folder, ie remove the filename part
+    string(REGEX REPLACE "(.*)(/[^/]*)$" "\\1" SRCGR ${SRCGR})
+
+    # Source_group expects \\ (double antislash), not / (slash)
+    string(REPLACE / \\ SRCGR ${SRCGR})
+    source_group("${SRCGR}" FILES ${f})
+endforeach()
 
 file(GLOB_RECURSE TMP_FILES
     ${CMAKE_CURRENT_LIST_DIR}/Entities/*.h

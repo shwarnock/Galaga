@@ -4,8 +4,9 @@
 #include "../../Entities/AnimatedTexture.h"
 #include "../../BezierPath.h"
 #include "../Formation.h"
+#include "../../Physics/PhysicsEntity.h"
 
-class Enemy : public GameEntity
+class Enemy : public PhysicsEntity
 {
 public:
 	enum STATES { flyIn, formation, dive, death };
@@ -25,7 +26,7 @@ protected:
 	int mCurrentPath;
 
 	int mCurrentWaypoint;
-	const float EPSILON = 25.0f;
+	const float EPSILON = 50.0f;
 
 	float mSpeed;
 

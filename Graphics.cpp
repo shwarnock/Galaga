@@ -41,8 +41,11 @@ Graphics::~Graphics()
 	SDL_DestroyRenderer(mRenderer);
 	mRenderer = NULL;
 
-	IMG_Quit();
+	SDL_FreeSurface(mBackBuffer);
+	mBackBuffer = NULL;
+
 	TTF_Quit();
+	IMG_Quit();
 	SDL_Quit();
 }
 
@@ -54,7 +57,7 @@ bool Graphics::Init()
 		return false;
 	}
 
-	mWindow = SDL_CreateWindow("Galaga", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	mWindow = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
 	if (mWindow == NULL)
 	{

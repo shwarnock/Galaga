@@ -36,14 +36,14 @@ void GameEntity::Rotation(float r)
 {
 	mRotation = r;
 
-	while (mRotation > 360.0f)
+	if (mRotation > 360.0f)
 	{
-		mRotation -= 360.0f;
-	}
-	
-	while (mRotation < 0.0f)
+		int mul = mRotation / 360;
+		mRotation -= 360.0f * mul;
+	} else if (mRotation < 0.0f)
 	{
-		mRotation += 360.0f;
+		int mul = (mRotation / 360) - 1;
+		mRotation -= 360.0f * mul;
 	}
 }
 
@@ -130,7 +130,7 @@ void GameEntity::Translate(Vector2 vec, SPACE space)
 
 void GameEntity::Rotate(float amount)
 {
-	mRotation += amount;
+	Rotation(mRotation + amount);
 }
 
 void GameEntity::Update()

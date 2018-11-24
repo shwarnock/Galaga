@@ -48,10 +48,6 @@ Level::Level(int stage, PlaySideBar* sideBar, Player* player)
 
 	mCurrentState = running;
 
-	mFormation = new Formation();
-	mFormation->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.38f, 150.0f));
-	Enemy::SetFormation(mFormation);
-
 	mButterflyCount = 0;
 	mWaspCount = 0;
 	mBossCount = 0;
@@ -60,11 +56,51 @@ Level::Level(int stage, PlaySideBar* sideBar, Player* player)
 	fullPath.append("Levels/Level1.xml");
 	mSpawningPatterns.LoadFile(fullPath.c_str());
 
+	mChallengeStage = mSpawningPatterns.FirstChildElement("Level")->FirstChildElement()->BoolAttribute("value");
+	
+	if (!mChallengeStage)
+	{
+		mFormation = new Formation();
+		mFormation->Pos(Vector2(Graphics::Instance()->SCREEN_WIDTH * 0.38f, 150.0f));
+		Enemy::SetFormation(mFormation);
+
+		for (int i = 0; i < MAX_BUTTERFLIES; ++i)
+		{
+			mFormationButterflies[i] = NULL;
+		}
+
+		for (int i = 0; i < MAX_WASPS; ++i)
+		{
+			mFormationWasps[i] = NULL;
+		}
+
+		for (int i = 0; i < MAX_BOSSES; ++i)
+		{
+			mFormationBosses[i] = NULL;
+		}
+	}
+
 	mCurrentFlyInPriority = 0;
 	mCurrentFlyInIndex = 0;
 	mSpawningFinished = false;
 	mSpawnDelay = 0.2f;
 	mSpawnTimer = 0.0f;
+
+	mDivingButterfly = NULL;
+	mSkipFirstButterfly = false;
+	mButterflyDiveDelay = 1.0f;
+	mButteflyDiveTimer = 0.0f;
+
+	mDivingWasp = NULL;
+	mDivingWasp2 = NULL;
+	mWaspDiveDelay = 3.0f;
+	mWaspDiveTimer = 0.0f;
+
+	mDivingBoss = NULL;
+	mCaptureDive = true;
+	mSkipFirstBoss = true;
+	mBossDiveDelay = 5.0f;
+	mBossDiveTimer = 0.0f;
 }
 
 Level::~Level()
@@ -87,8 +123,29 @@ Level::~Level()
 	delete mGameOverLabel;
 	mGameOverLabel = NULL;
 
-	delete mFormation;
-	mFormation = NULL;
+	if (!mChallengeStage)
+	{
+		delete mFormation;
+		mFormation = NULL;
+
+		for (int i = 0; i < MAX_BUTTERFLIES; ++i)
+		{
+			delete mFormationButterflies[i];
+			mFormationButterflies[i] = NULL;
+		}
+
+		for (int i = 0; i < MAX_WASPS; ++i)
+		{
+			delete mFormationWasps[i];
+			mFormationWasps[i] = NULL;
+		}
+
+		for (int i = 0; i < MAX_BOSSES; ++i)
+		{
+			delete mFormationBosses[i];
+			mFormationBosses[i] = NULL;
+		}
+	}
 
 	for (int i = 0; i < mEnemies.size(); ++i)
 	{
@@ -175,6 +232,35 @@ void Level::HandlePlayerDeath()
 	}
 }
 
+bool Level::EnemyFlyingIn()
+{
+	for (int i = 0; i < MAX_BUTTERFLIES; ++i)
+	{
+		if (mFormationButterflies[i] != NULL && mFormationButterflies[i]->CurrentState() == Enemy::flyIn)
+		{
+			return true;
+		}
+	}
+
+	for (int i = 0; i < MAX_WASPS; ++i)
+	{
+		if (mFormationWasps[i] != NULL && mFormationWasps[i]->CurrentState() == Enemy::flyIn)
+		{
+			return true;
+		}
+	}
+
+	for (int i = 0; i < MAX_BOSSES; ++i)
+	{
+		if (mFormationBosses[i] != NULL && mFormationBosses[i]->CurrentState() == Enemy::flyIn)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void Level::HandleEnemySpawning()
 {
 	mSpawnTimer += mTimer->DeltaTime();
@@ -205,16 +291,36 @@ void Level::HandleEnemySpawning()
 
 					if (type.compare("Butterfly") == 0)
 					{
-						mEnemies.push_back(new Butterfly(index, path, false));
-						++mButterflyCount;
+						if (!mChallengeStage)
+						{
+							mFormationButterflies[index] = new Butterfly(index, path, false);
+							++mButterflyCount;
+						} else
+						{
+							mEnemies.push_back(new Butterfly(index, path, false));
+						}
+
 					} else if (type.compare("Wasp") == 0) 
 					{
-						mEnemies.push_back(new Wasp(index, path, false, false));
-						++mWaspCount;
+						if (!mChallengeStage)
+						{
+							mFormationWasps[index] = new Wasp(index, path, false, false);
+							++mWaspCount;
+						} else
+						{
+							mEnemies.push_back(new Wasp(index, path, false, false));
+						}
 					} else if (type.compare("Boss") == 0)
 					{
-						mEnemies.push_back(new Boss(index, path, false));
-						++mBossCount;
+						if (!mChallengeStage)
+						{
+							mFormationBosses[index] = new Boss(index, path, false);
+							++mBossCount;
+						}
+						else
+						{
+							mEnemies.push_back(new Boss(index, path, false));
+						}
 					}
 
 					spawned = true;
@@ -231,19 +337,7 @@ void Level::HandleEnemySpawning()
 		{
 			if (!spawned)
 			{
-				bool flyingIn = false;
-
-				for (int i = 0; i < mEnemies.size(); ++i)
-				{
-					if (mEnemies[i]->CurrentState() == Enemy::flyIn)
-					{
-						flyingIn = true;
-						break;
-					}
-
-				}
-
-				if (!flyingIn)
+				if (!EnemyFlyingIn())
 				{
 					++mCurrentFlyInPriority;
 					mCurrentFlyInIndex = 0;
@@ -262,96 +356,162 @@ void Level::HandleEnemyFormation()
 {
 	mFormation->Update();
 
-	if (mButterflyCount == MAX_BUTTERFLIES && mWaspCount == MAX_WASPS && mBossCount == MAX_BOSSES)
+	for (int i = 0; i < MAX_BUTTERFLIES; ++i)
 	{
-		bool flyIn = false;
-		for (int i = 0; i < mEnemies.size(); ++i)
+		if (mFormationButterflies[i] != NULL)
 		{
-			if (mEnemies[i]->CurrentState() == Enemy::flyIn)
+			mFormationButterflies[i]->Update();
+		}
+	}
+
+	for (int i = 0; i < MAX_WASPS; ++i)
+	{
+		if (mFormationWasps[i] != NULL)
+		{
+			mFormationWasps[i]->Update();
+		}
+	}
+
+	for (int i = 0; i < MAX_BOSSES; ++i)
+	{
+		if (mFormationBosses[i] != NULL)
+		{
+			mFormationBosses[i]->Update();
+		}
+	}
+
+	if (!mFormation->Locked())
+	{
+		if (mButterflyCount == MAX_BUTTERFLIES && mWaspCount == MAX_WASPS && mBossCount == MAX_BOSSES)
+		{
+			if (!EnemyFlyingIn())
 			{
-				flyIn = true;
-				break;
+				mFormation->Lock();
 			}
 		}
-
-		if (!flyIn)
-		{
-			mFormation->Lock();
-		}
+	} else
+	{
+		HandleEnemyDiving();
 	}
 }
 
 void Level::HandleEnemyDiving()
 {
-	if (mFormation->Locked())
+	if (mDivingButterfly == NULL)
 	{
-		if (InputManager::Instance()->KeyPressed(SDL_SCANCODE_V))
+		mButteflyDiveTimer += mTimer->DeltaTime();
+		if (mButteflyDiveTimer >= mButterflyDiveDelay)
 		{
-			for (int i = mEnemies.size() - 1; i >= 0; --i)
+			bool skipped = false;
+			for (int i = MAX_BUTTERFLIES - 1; i >= 0; --i)
 			{
-				if (mEnemies[i]->Type() == Enemy::wasp && mEnemies[i]->CurrentState() == Enemy::formation)
+				if (mFormationButterflies[i]->CurrentState() == Enemy::formation)
 				{
-					mEnemies[i]->Dive();
-					break;
-				}
-			}
-		}
-	}
-
-	if (mFormation->Locked())
-	{
-		if (InputManager::Instance()->KeyPressed(SDL_SCANCODE_B))
-		{
-			for (int i = mEnemies.size() - 1; i >= 0; --i)
-			{
-				if (mEnemies[i]->Type() == Enemy::butterfly && mEnemies[i]->CurrentState() == Enemy::formation)
-				{
-					mEnemies[i]->Dive();
-					break;
-				}
-			}
-		}
-	}
-
-	if (mFormation->Locked())
-	{
-		if (InputManager::Instance()->KeyPressed(SDL_SCANCODE_W))
-		{
-			for (int i = mEnemies.size() - 1; i >= 0; --i)
-			{
-				if (mEnemies[i]->Type() == Enemy::boss && mEnemies[i]->CurrentState() == Enemy::formation)
-				{
-					mEnemies[i]->Dive(1);
-					break;
-				}
-			}
-		}
-	}
-
-	if (mFormation->Locked())
-	{
-		if (InputManager::Instance()->KeyPressed(SDL_SCANCODE_G))
-		{
-			for (int i = mEnemies.size() - 1; i >= 0; --i)
-			{
-				if (mEnemies[i]->Type() == Enemy::boss && mEnemies[i]->CurrentState() == Enemy::formation)
-				{
-					mEnemies[i]->Dive();
-
-					int index = mEnemies[i]->Index();
-					int firstEscortIndex = (index % 2 == 0) ? index * 2 : index * 2 - 1;
-					int secondEscortIndex = firstEscortIndex + 4;
-
-					for (int j = 0; j < mEnemies.size(); ++j)
+					if (!mSkipFirstButterfly || (mSkipFirstButterfly && skipped))
 					{
-						if (mEnemies[j]->Type() == Enemy::butterfly && mEnemies[j]->CurrentState() == Enemy::formation && (mEnemies[j]->Index() == firstEscortIndex || mEnemies[j]->Index() == secondEscortIndex))
-						{
-							mEnemies[j]->Dive(1);
-						}
+						mDivingButterfly = mFormationButterflies[i];
+						mDivingButterfly->Dive();
+						mSkipFirstButterfly = !mSkipFirstButterfly;
+						break;
 					}
-					break;
+
+					skipped = true;
 				}
 			}
+
+			mButteflyDiveTimer = 0.0f;
+		}
+	} else
+	{
+		if (mDivingButterfly->CurrentState() != Enemy::dive)
+		{
+			mDivingButterfly = NULL;
+		}
+	}
+
+	mWaspDiveTimer += mTimer->DeltaTime();
+
+	if (mWaspDiveTimer >= mWaspDiveDelay)
+	{
+		for (int i = MAX_WASPS - 1; i >= 0; --i)
+		{
+			if (mFormationWasps[i]->CurrentState() == Enemy::formation)
+			{
+				if (mDivingWasp == NULL)
+				{
+					mDivingWasp = mFormationWasps[i];
+					mDivingWasp->Dive();
+				} else if (mDivingWasp2 == NULL)
+				{
+					mDivingWasp2 = mFormationWasps[i];
+					mDivingWasp2->Dive();
+				}
+
+				break;
+			}
+		}
+
+		mWaspDiveTimer = 0.0f;
+	}
+
+	if (mDivingWasp != NULL && mDivingWasp->CurrentState() != Enemy::dive)
+	{
+		mDivingWasp = NULL;
+	}
+
+	if (mDivingWasp2 != NULL && mDivingWasp2->CurrentState() != Enemy::dive)
+	{
+		mDivingWasp2 = NULL;
+	}
+
+	if (mDivingBoss = NULL)
+	{
+		mBossDiveTimer += mTimer->DeltaTime();
+		if (mBossDiveTimer >= mBossDiveDelay)
+		{
+			bool skipped = false;
+			for (int i = MAX_BOSSES - 1; i >= 0; --i)
+			{
+				if (mFormationBosses[i]->CurrentState() == Enemy::formation)
+				{
+					if (!mSkipFirstBoss || (mSkipFirstBoss && skipped))
+					{
+						mDivingBoss = mFormationBosses[i];
+						if (mCaptureDive)
+						{
+							mDivingBoss->Dive(1);
+						} else
+						{
+							mDivingBoss->Dive();
+							int index = mDivingBoss->Index();
+							int firstEscortIndex = index % 2 == 0 ? index * 2 : index * 2 - 1;
+							int secondEscortIndex = firstEscortIndex + 4;
+
+							if (mFormationButterflies[firstEscortIndex]->CurrentState() == Enemy::formation)
+							{
+								mFormationButterflies[firstEscortIndex]->Dive(1);
+							}
+
+							if (mFormationButterflies[secondEscortIndex]->CurrentState() == Enemy::formation)
+							{
+								mFormationButterflies[secondEscortIndex]->Dive(1);
+							}
+						}
+
+						mSkipFirstBoss = !mSkipFirstBoss;
+						mCaptureDive = !mCaptureDive;
+						break;
+					}
+					skipped = true;
+				}
+			}
+			mBossDiveTimer = 0.0f;
+		}
+	} else
+	{
+		if (mDivingBoss->CurrentState() != Enemy::dive)
+		{
+			mDivingBoss = NULL;
 		}
 	}
 }
@@ -370,8 +530,11 @@ void Level::Update()
 	{
 		if (!mSpawningFinished)
 			HandleEnemySpawning();
-		HandleEnemyFormation();
-		HandleEnemyDiving();
+
+		if (!mChallengeStage)
+		{
+			HandleEnemyFormation();
+		}
 
 		for (int i = 0; i < mEnemies.size(); ++i)
 			mEnemies[i]->Update();
@@ -402,8 +565,36 @@ void Level::Render()
 		
 	} else
 	{
-		for (int i = 0; i < mEnemies.size(); ++i)
-			mEnemies[i]->Render();
+		if (!mChallengeStage)
+		{
+			for (int i = 0; i < MAX_BUTTERFLIES; ++i)
+			{
+				if (mFormationButterflies[i] != NULL)
+				{
+					mFormationButterflies[i]->Render();
+				}
+			}
+
+			for (int i = 0; i < MAX_WASPS; ++i)
+			{
+				if (mFormationWasps[i] != NULL)
+				{
+					mFormationWasps[i]->Render();
+				}
+			}
+
+			for (int i = 0; i < MAX_BOSSES; ++i)
+			{
+				if (mFormationBosses[i] != NULL)
+				{
+					mFormationBosses[i]->Render();
+				}
+			}
+		} else
+		{
+			for (int i = 0; i < mEnemies.size(); ++i)
+				mEnemies[i]->Render();
+		}
 
 		if (mPlayerHit)
 		{

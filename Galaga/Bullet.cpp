@@ -1,4 +1,5 @@
 #include "Bullet.h";
+#include "../Physics/BoxCollider.h"
 
 Bullet::Bullet()
 {
@@ -11,6 +12,8 @@ Bullet::Bullet()
 	mBullet->Pos(VEC2_ZERO);
 
 	Reload();
+
+	AddCollider(new BoxCollider(mBullet->ScaledDimensions()));
 }
 
 Bullet::~Bullet()
@@ -52,5 +55,6 @@ void Bullet::Render()
 	if (Active())
 	{
 		mBullet->Render();
+		PhysicsEntity::Render();
 	}
 }

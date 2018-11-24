@@ -27,7 +27,7 @@ InputManager::InputManager()
 
 InputManager::~InputManager()
 {
-	delete[] mPrevKeyboardState;
+	delete mPrevKeyboardState;
 	mPrevKeyboardState = NULL;
 }
 

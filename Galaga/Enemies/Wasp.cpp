@@ -1,4 +1,5 @@
 #include "Wasp.h"
+#include "../../Physics/BoxCollider.h"
 
 vector<vector<Vector2>> Wasp::sDivePaths;
 
@@ -44,6 +45,8 @@ Wasp::Wasp(int index, int path, bool challengeStage, bool diver)
 	mTextures[1]->Pos(VEC2_ZERO);
 
 	mType = wasp;
+
+	AddCollider(new BoxCollider(mTextures[1]->ScaledDimensions()));
 }
 
 Wasp::~Wasp()

@@ -1,5 +1,5 @@
 #include "AssetManager.h"
-
+  
 AssetManager* AssetManager::sInstance = NULL;
 
 AssetManager* AssetManager::Instance()

@@ -1,10 +1,10 @@
 #ifndef _BULLET_H
 #define _BULLET_H
 
-#include "../Entities/Texture.h"
+#include "../Physics/PhysicsEntity.h"
 #include "../Timer.h"
 
-class Bullet : public GameEntity
+class Bullet : public PhysicsEntity
 {
 private:
 

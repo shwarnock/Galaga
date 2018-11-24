@@ -26,6 +26,8 @@ public:
 	Texture(string text, string fontPath, int size, SDL_Color color);
 	~Texture();
 
+	Vector2 ScaledDimensions();
+
 	virtual void Render();
 };
 

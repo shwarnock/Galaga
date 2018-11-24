@@ -124,6 +124,21 @@ void Enemy::HandleFlyInState()
 void Enemy::HandleFormationState()
 {
 	Pos(LocalFormationPosition());
+
+	float rotation = Rotation();
+
+	if (rotation != 0)
+	{
+		if (rotation > 2.0f)
+		{
+			float rotationSpeed = 200.0f;
+			float rotationDir = rotation == 180.0f ? 1.0f : rotation - 180.0f;
+			Rotate((rotationDir / abs(rotationDir)) * mTimer->DeltaTime() * rotationSpeed);
+		} else
+		{
+			Rotation(0);
+		}
+	}
 }
 
 void Enemy::HandleStates()
@@ -172,6 +187,8 @@ void Enemy::RenderStates()
 			RenderDeathState();
 			break;
 	}
+
+	PhysicsEntity::Render();
 }
 
 Enemy::STATES Enemy::CurrentState()
@@ -195,7 +212,6 @@ Vector2 Enemy::WorldFormationPosition()
 void Enemy::JoinFormation()
 {
 	Pos(WorldFormationPosition());
-	Rotation(0);
 	Parent(sFormation);
 	mCurrentState = formation;
 }

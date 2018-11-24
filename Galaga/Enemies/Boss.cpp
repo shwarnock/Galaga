@@ -1,5 +1,5 @@
 #include "Boss.h"
-
+#include "../../Physics/BoxCollider.h"
 vector<vector<Vector2>> Boss::sDivePaths;
 
 void Boss::CreateDivePaths()
@@ -74,6 +74,8 @@ Boss::Boss(int index, int path, bool challengeStage)
 	mCaptureBeam->Parent(this);
 	mCaptureBeam->Pos(Vector2(0.0f, -190.0f));
 	mCaptureBeam->Rotation(180.0f);
+
+	AddCollider(new BoxCollider(mTextures[1]->ScaledDimensions()));
 }
 
 Boss::~Boss()

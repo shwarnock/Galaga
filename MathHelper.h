@@ -72,6 +72,16 @@ inline Vector2 operator *(const float& lhs, const Vector2& rhs)
 	return Vector2(lhs * rhs.x, lhs * rhs.y);
 }
 
+inline Vector2 operator /(const Vector2& lhs, const float& rhs)
+{
+	return Vector2(lhs.x / rhs, lhs.y / rhs);
+}
+
+inline Vector2 operator /(const float& lhs, const Vector2& rhs)
+{
+	return Vector2(lhs / rhs.x, lhs / rhs.y);
+}
+
 inline Vector2 RotateVector(Vector2& vec, float angle)
 {
 	float radAngle = (float)(angle*(DEG_TO_RAD));
