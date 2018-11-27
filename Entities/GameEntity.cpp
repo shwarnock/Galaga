@@ -26,10 +26,19 @@ Vector2 GameEntity::Pos(SPACE space)
 		return mPos;
 	}
 
-	Vector2 parentScale = mParent->Scale(world);
-	Vector2 rotPos = RotateVector(Vector2(mPos.x * parentScale.x, mPos.y * parentScale.y), mParent->Rotation(local));
+	GameEntity* parent = mParent;
+	Vector2 finalPos = mPos, parentScale = VEC2_ZERO;
 
-	return mParent->Pos(world) + rotPos;
+	do 
+	{
+		parentScale = mParent->Scale(local);
+		finalPos = RotateVector(Vector2(finalPos.x * parentScale.x, finalPos.y * parentScale.y), parent->Rotation(local));
+		finalPos += parent->Pos(local);
+
+		parent = parent->Parent();
+	} while (parent);
+
+	return finalPos;
 }
 
 void GameEntity::Rotation(float r)

@@ -17,14 +17,19 @@ private:
 	Texture* mBullet;
 
 public:
-	Bullet();
+	Bullet(bool friendly);
 	~Bullet();
 
 	void Fire(Vector2 pos);
 	void Reload();
 
+	void Hit(PhysicsEntity* other) override;
+
 	void Update();
 	void Render();
+
+private:
+	bool IgnoreCollisions() override;
 };
 
 #endif

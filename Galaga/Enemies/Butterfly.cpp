@@ -1,5 +1,7 @@
 #include "Butterfly.h"
 #include "../../Physics/BoxCollider.h"
+#include "../../Managers/AudioManager.h"
+#include "../../Physics/CircleCollider.h"
 
 vector<vector<Vector2>> Butterfly::sDivePaths;
 
@@ -124,11 +126,6 @@ void Butterfly::HandleDiveState()
 	}
 }
 
-void Butterfly::HandleDeathState()
-{
-
-}
-
 void Butterfly::RenderDiveState()
 {
 	mTextures[0]->Render();
@@ -145,14 +142,16 @@ void Butterfly::RenderDiveState()
 	}
 }
 
-void Butterfly::RenderDeathState()
-{
-
-}
-
 void Butterfly::Dive(int type)
 {
 	mEscort = type != 0;
 
 	Enemy::Dive();
+}
+
+void Butterfly::Hit(PhysicsEntity* other)
+{
+	AudioManager::Instance()->PlaySFX("galaga_destroyed.wav", 0, 3);
+	sPlayer->AddScore(mCurrentState == Enemy::formation ? 80 : 160);
+	Enemy::Hit(other);
 }

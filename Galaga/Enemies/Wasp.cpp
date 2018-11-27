@@ -1,5 +1,7 @@
 #include "Wasp.h"
 #include "../../Physics/BoxCollider.h"
+#include "../../Managers/AudioManager.h"
+#include "../../Managers/PhysicsManager.h"
 
 vector<vector<Vector2>> Wasp::sDivePaths;
 
@@ -103,11 +105,6 @@ void Wasp::HandleDiveState()
 	}
 }
 
-void Wasp::HandleDeathState()
-{
-
-}
-
 void Wasp::RenderDiveState()
 {
 	mTextures[0]->Render();
@@ -124,7 +121,9 @@ void Wasp::RenderDiveState()
 	Graphics::Instance()->DrawLine(pathEndPos.x, pathEndPos.y, finalPos.x, finalPos.y);
 }
 
-void Wasp::RenderDeathState()
+void Wasp::Hit(PhysicsEntity* other)
 {
-
+	AudioManager::Instance()->PlaySFX("galaga_destroyed.wav", 0, 4);
+	sPlayer->AddScore(mCurrentState == Enemy::formation ? 50 : 100);
+	Enemy::Hit(other);
 }

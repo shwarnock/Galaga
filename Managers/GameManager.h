@@ -4,6 +4,7 @@
 #include "AudioManager.h"
 #include "ScreenManager.h"
 #include "../Timer.h"
+#include "PhysicsManager.h"
 
 class GameManager
 {
@@ -17,6 +18,7 @@ private:
 	AssetManager* mAssetManager;
 	InputManager* mInputManager;
 	AudioManager* mAudioManager;
+	PhysicsManager* mPhysicsManager;
 
 	Texture* mTexture;
 	Texture* mTexture2;

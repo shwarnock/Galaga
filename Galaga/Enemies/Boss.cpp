@@ -1,5 +1,8 @@
 #include "Boss.h"
 #include "../../Physics/BoxCollider.h"
+#include "../../Managers/AudioManager.h"
+#include "../../Managers/PhysicsManager.h"
+
 vector<vector<Vector2>> Boss::sDivePaths;
 
 void Boss::CreateDivePaths()
@@ -76,6 +79,8 @@ Boss::Boss(int index, int path, bool challengeStage)
 	mCaptureBeam->Rotation(180.0f);
 
 	AddCollider(new BoxCollider(mTextures[1]->ScaledDimensions()));
+
+	mWasHit = false;
 }
 
 Boss::~Boss()
@@ -153,11 +158,6 @@ void Boss::HandleDiveState()
 	}
 }
 
-void Boss::HandleDeathState()
-{
-
-}
-
 void Boss::RenderDiveState()
 {
 	mTextures[0]->Render();
@@ -170,11 +170,6 @@ void Boss::RenderDiveState()
 
 	if (mCapturing && mCaptureBeam->IsAnimating())
 		mCaptureBeam->Render();
-}
-
-void Boss::RenderDeathState()
-{
-
 }
 
 void Boss::Dive(int type)
@@ -191,5 +186,32 @@ void Boss::Dive(int type)
 	} else
 	{
 		mCurrentPath = mIndex % 2;
+	}
+}
+
+void Boss::Hit(PhysicsEntity* other)
+{
+	if (mWasHit)
+	{
+		Enemy::Hit(other);
+		sPlayer->AddScore(mCurrentState == Enemy::formation ? 150 : mCaptureDive ? 400 : 800);
+		AudioManager::Instance()->PlaySFX("bossgalaga_destroyed.wav", 0, 2);
+	} else
+	{
+		mWasHit = true;
+		delete mTextures[0];
+		mTextures[0] = new Texture("BossHit.png");
+		mTextures[0]->Parent(this);
+		mTextures[0]->Pos(VEC2_ZERO);
+		mTextures[0]->Rotation(0.0f);
+
+		delete mTextures[1];
+		mTextures[1] = new Texture("BossHit2.png");
+		mTextures[1]->Parent(this);
+		mTextures[1]->Pos(VEC2_ZERO);
+		mTextures[1]->Rotation(0.0f);
+
+
+		AudioManager::Instance()->PlaySFX("bossgalaga_injured.wav", 0, 1);
 	}
 }

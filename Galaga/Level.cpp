@@ -101,6 +101,8 @@ Level::Level(int stage, PlaySideBar* sideBar, Player* player)
 	mSkipFirstBoss = true;
 	mBossDiveDelay = 5.0f;
 	mBossDiveTimer = 0.0f;
+
+	Enemy::CurrentPlayer(mPlayer);
 }
 
 Level::~Level()
@@ -188,11 +190,9 @@ void Level::HandleCollisions()
 {
 	if (!mPlayerHit)
 	{
-		if (InputManager::Instance()->KeyPressed(SDL_SCANCODE_X))
+		if (mPlayer->WasHit())
 		{
-			mPlayer->WasHit();
 			mPlaySideBar->SetShips(mPlayer->Lives());
-
 			mPlayerHit = true;
 			mPlayerRespawnTimer = 0.0f;
 			mPlayer->Active(false);
@@ -356,11 +356,17 @@ void Level::HandleEnemyFormation()
 {
 	mFormation->Update();
 
+	bool levelCleared = mSpawningFinished;
+
 	for (int i = 0; i < MAX_BUTTERFLIES; ++i)
 	{
 		if (mFormationButterflies[i] != NULL)
 		{
 			mFormationButterflies[i]->Update();
+			if (mFormationButterflies[i]->CurrentState() != Enemy::death || mFormationButterflies[i]->InDeathAnimation())
+			{
+				levelCleared = false;
+			}
 		}
 	}
 
@@ -369,6 +375,10 @@ void Level::HandleEnemyFormation()
 		if (mFormationWasps[i] != NULL)
 		{
 			mFormationWasps[i]->Update();
+			if (mFormationWasps[i]->CurrentState() != Enemy::death || mFormationWasps[i]->InDeathAnimation())
+			{
+				levelCleared = false;
+			}
 		}
 	}
 
@@ -377,7 +387,16 @@ void Level::HandleEnemyFormation()
 		if (mFormationBosses[i] != NULL)
 		{
 			mFormationBosses[i]->Update();
+			if (mFormationBosses[i]->CurrentState() != Enemy::death || mFormationBosses[i]->InDeathAnimation())
+			{
+				levelCleared = false;
+			}
 		}
+	}
+
+	if (levelCleared)
+	{
+		mCurrentState = finished;
 	}
 
 	if (!mFormation->Locked())
@@ -464,7 +483,7 @@ void Level::HandleEnemyDiving()
 		mDivingWasp2 = NULL;
 	}
 
-	if (mDivingBoss = NULL)
+	if (mDivingBoss == NULL)
 	{
 		mBossDiveTimer += mTimer->DeltaTime();
 		if (mBossDiveTimer >= mBossDiveDelay)
@@ -544,10 +563,6 @@ void Level::Update()
 		if (mPlayerHit)
 		{
 			HandlePlayerDeath();
-		} else
-		{
-			if (InputManager::Instance()->KeyPressed(SDL_SCANCODE_N))
-				mCurrentState = finished;
 		}
 	}
 }

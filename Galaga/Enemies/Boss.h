@@ -16,6 +16,8 @@ private:
 
 	CaptureBeam* mCaptureBeam;
 
+	bool mWasHit;
+
 private:
 
 	Vector2 LocalFormationPosition();
@@ -23,10 +25,8 @@ private:
 	void HandleCaptureBeam();
 
 	void HandleDiveState();
-	void HandleDeathState();
 
 	void RenderDiveState();
-	void RenderDeathState();
 
 public:
 	static void CreateDivePaths();
@@ -35,6 +35,8 @@ public:
 	~Boss();
 
 	void Dive(int type = 0);
+
+	void Hit(PhysicsEntity* other) override;
 };
 
 #endif

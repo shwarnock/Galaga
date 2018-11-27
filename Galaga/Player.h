@@ -6,7 +6,7 @@
 #include "../Managers/AudioManager.h"
 #include "Bullet.h"
 
-class Player : public GameEntity
+class Player : public PhysicsEntity
 {
 private:
 	Timer* mTimer;
@@ -15,6 +15,7 @@ private:
 
 	bool mVisible;
 	bool mAnimating;
+	bool mWasHit;
 
 	int mScore;
 	int mLives;
@@ -30,6 +31,8 @@ private:
 	Bullet* mBullets[MAX_BULLETS];
 
 private:
+	bool IgnoreCollisions() override;
+
 	void HandleMovement();
 
 	void HandleFiring();
@@ -46,7 +49,8 @@ public:
 
 	void AddScore(int change);
 
-	void WasHit();
+	bool WasHit();
+	void Hit(PhysicsEntity* other) override;
 
 	void Update();
 	void Render();

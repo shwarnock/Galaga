@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "../Physics/BoxCollider.h"
+#include "../Managers/PhysicsManager.h"
 
 Player::Player()
 {
@@ -8,6 +10,7 @@ Player::Player()
 
 	mVisible = false;
 	mAnimating = false;
+	mWasHit = false;
 
 	mScore = 0;
 	mLives = 2;
@@ -18,15 +21,21 @@ Player::Player()
 	mMoveSpeed = 300.0f;
 	mMoveBounds = Vector2(40.0f, 730.0f);
 
-	mDeathAnimation = new AnimatedTexture("PlayerDestruction.png", 0, 0, 148, 128, 4, 1.0f, AnimatedTexture::horizontal);
+	mDeathAnimation = new AnimatedTexture("PlayerDestruction.png", 0, 0, 128, 128, 4, 1.0f, AnimatedTexture::horizontal);
 	mDeathAnimation->Parent(this);
 	mDeathAnimation->Pos(VEC2_ZERO);
 	mDeathAnimation->WrapMode(AnimatedTexture::once);
 
 	for (int i = 0; i < MAX_BULLETS; ++i)
 	{
-		mBullets[i] = new Bullet();
+		mBullets[i] = new Bullet(true);
 	}
+
+	AddCollider(new BoxCollider(Vector2(15.0f, 55.0f)));
+	AddCollider(new BoxCollider(Vector2(15.0f, 40.0f)), Vector2(15.0f, 10.0f));
+	AddCollider(new BoxCollider(Vector2(15.0f, 40.0f)), Vector2(-15.0f, 10.0f));
+
+	mId = PhysicsManager::Instance()->RegisterEntity(this, PhysicsManager::CollisionLayers::Friendly);
 }
 
 Player::~Player()
@@ -110,6 +119,10 @@ void Player::Update()
 {
 	if (mAnimating)
 	{
+		if (mWasHit)
+		{
+			mWasHit = false;
+		}
 		mDeathAnimation->Update();
 		mAnimating = mDeathAnimation->IsAnimating();
 	} else
@@ -125,12 +138,23 @@ void Player::Update()
 		mBullets[i]->Update();
 }
 
-void Player::WasHit()
+bool Player::WasHit()
+{
+	return mWasHit;
+}
+
+void Player::Hit(PhysicsEntity* other)
 {
 	--mLives;
 	mDeathAnimation->ResetAnimation();
 	mAnimating = true;
 	mAudio->PlaySFX("fighter_destroyed.wav");
+	mWasHit = true;
+}
+
+bool Player::IgnoreCollisions()
+{
+	return !mVisible || mAnimating;
 }
 
 void Player::Render()
@@ -144,8 +168,10 @@ void Player::Render()
 		{
 			mShip->Render();
 		}
-	} 
+	}
 
 	for (int i = 0; i < MAX_BULLETS; ++i)
 		mBullets[i]->Render();
+
+	PhysicsEntity::Render();
 }

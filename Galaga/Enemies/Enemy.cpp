@@ -1,7 +1,9 @@
 #include "Enemy.h"
+#include "../../Managers/PhysicsManager.h"
 
 vector<vector<Vector2>> Enemy::sPaths;
 Formation* Enemy::sFormation = NULL;
+Player* Enemy::sPlayer = nullptr;
 
 void Enemy::CreatePaths()
 {
@@ -61,6 +63,11 @@ void Enemy::SetFormation(Formation* f)
 	sFormation = f;
 }
 
+void Enemy::CurrentPlayer(Player* player)
+{
+	sPlayer = player;
+}
+
 Enemy::Enemy(int index, int path, bool challengeStage)
 {
 	mTimer = Timer::Instance();
@@ -78,6 +85,13 @@ Enemy::Enemy(int index, int path, bool challengeStage)
 	mTextures[1] = NULL;
 
 	mSpeed = 500.0f;
+
+	mId = PhysicsManager::Instance()->RegisterEntity(this, PhysicsManager::CollisionLayers::Hostile);
+
+	mDeathAnimation = new AnimatedTexture("EnemyDeath.png", 0, 0, 128, 128, 5, 1.0f, AnimatedTexture::horizontal);
+	mDeathAnimation->Parent(this);
+	mDeathAnimation->Pos(VEC2_ZERO);
+	mDeathAnimation->WrapMode(AnimatedTexture::once);
 }
 
 Enemy::~Enemy()
@@ -90,6 +104,18 @@ Enemy::~Enemy()
 		mTextures[i] = NULL;
 	}
 
+	delete mDeathAnimation;
+	mDeathAnimation = nullptr;
+}
+
+void Enemy::Hit(PhysicsEntity* other)
+{
+	if (mCurrentState == formation)
+	{
+		Parent(nullptr);
+	}
+
+	mCurrentState = death;
 }
 
 void Enemy::HandleFlyInState()
@@ -141,6 +167,14 @@ void Enemy::HandleFormationState()
 	}
 }
 
+void Enemy::HandleDeathState()
+{
+	if (mDeathAnimation->IsAnimating())
+	{
+		mDeathAnimation->Update();
+	}
+}
+
 void Enemy::HandleStates()
 {
 	switch (mCurrentState)
@@ -170,6 +204,14 @@ void Enemy::RenderFormationState()
 	mTextures[sFormation->GetTick() % 2]->Render();
 }
 
+void Enemy::RenderDeathState()
+{
+	if (mDeathAnimation->IsAnimating())
+	{
+		mDeathAnimation->Render();
+	}
+}
+
 void Enemy::RenderStates()
 {
 	switch (mCurrentState)
@@ -189,6 +231,11 @@ void Enemy::RenderStates()
 	}
 
 	PhysicsEntity::Render();
+}
+
+bool Enemy::IgnoreCollisions()
+{
+	return mCurrentState == death;
 }
 
 Enemy::STATES Enemy::CurrentState()
@@ -244,6 +291,11 @@ void Enemy::Dive(int type)
 	mCurrentState = dive;
 	mDiveStartPosition = Pos();
 	mCurrentWaypoint = 1;
+}
+
+bool Enemy::InDeathAnimation()
+{
+	return mDeathAnimation->IsAnimating();
 }
 
 void Enemy::Update()

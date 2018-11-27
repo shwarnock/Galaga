@@ -114,6 +114,7 @@ void PlayScreen::Update()
 		}
 
 		mPlayer->Update();
+		mSideBar->SetPlayerScore(mPlayer->Score());
 	}
 }
 
